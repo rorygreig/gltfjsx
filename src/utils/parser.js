@@ -69,7 +69,7 @@ function parse(fileName, modelName, folderName, gltf, options = {}) {
 
     // Bail out on lights and bones
     if (type === 'bone') {
-      return `<primitive object={${node}} />${!parent ? '' : '\n'}`
+      return `<primitive object={${node}.clone()} />${!parent ? '' : '\n'}`
     }
 
     // Collect children
@@ -238,7 +238,11 @@ ${parseExtras(gltf.parser.json.asset && gltf.parser.json.asset.extras)}*/
           )
         }
 `
-  return prettier.format(result, {
+
+  // replace all skinnedMeshes with meshes to allow duplicate objects
+  let resultCorrectMeshType = result.replaceAll('skinnedMesh', 'mesh')
+
+  return prettier.format(resultCorrectMeshType, {
     semi: false,
     printWidth: options.printwidth || 120,
     singleQuote: true,
