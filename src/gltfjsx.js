@@ -26,6 +26,11 @@ module.exports = function (file, output, options) {
     return relativePath
   }
 
+  function getFolderName(file) {
+    const rootPath = options.root ? path.resolve(options.root) : path.dirname(file)
+    return path.basename(rootPath)
+  }
+
   return new Promise((resolve, reject) => {
     const stream = fs.createWriteStream(output)
     stream.once('open', (fd) => {
@@ -33,13 +38,14 @@ module.exports = function (file, output, options) {
         reject(file + ' does not exist.')
       } else {
         const filePath = getRelativeFilePath(file)
+        const folderName = getFolderName(file)
         const data = fs.readFileSync(file)
         const arrayBuffer = toArrayBuffer(data)
         gltfLoader.parse(
           arrayBuffer,
           '',
           (gltf) => {
-            stream.write(parse(filePath, gltf, options))
+            stream.write(parse(filePath, folderName, gltf, options))
             stream.end()
             if (options.setLog) setTimeout(() => resolve(), (options.timeout = options.timeout + options.delay))
             else resolve()

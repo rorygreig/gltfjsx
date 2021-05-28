@@ -3,7 +3,16 @@ const prettier = require('prettier')
 const parserBabel = require('prettier/parser-babel')
 const isVarName = require('./isVarName')
 
-function parse(fileName, gltf, options = {}) {
+function parse(fileName, folderName, gltf, options = {}) {
+  function snake2Pascal(str) {
+    str += ''
+    str = str.split('_')
+    for (var i = 0; i < str.length; i++) {
+      str[i] = str[i].slice(0, 1).toUpperCase() + str[i].slice(1, str[i].length)
+    }
+    return str.join('')
+  }
+
   function sanitizeName(name) {
     return isVarName(name) ? `.${name}` : `['${name}']`
   }
@@ -211,6 +220,8 @@ function parse(fileName, gltf, options = {}) {
     }
   })
 
+  modelName = snake2Pascal(folderName)
+
   const animations = gltf.animations
   const hasAnimations = animations.length > 0
   const scene = print(objects, gltf, gltf.scene)
@@ -225,8 +236,10 @@ ${parseExtras(gltf.parser.json.asset && gltf.parser.json.asset.extras)}*/
         ${hasAnimations ? 'useAnimations' : ''} } from '@react-three/drei'
         ${options.types ? 'import { GLTF } from "three/examples/jsm/loaders/GLTFLoader"' : ''}
         ${options.types ? printTypes(objects, animations) : ''}
-        export default function Model(props${options.types ? ": JSX.IntrinsicElements['group']" : ''}) {
-          const { nodes, materials${hasAnimations ? ', animations' : ''} } = useGLTF('/${fileName}'${
+        export default function ${modelName}(props${options.types ? ": JSX.IntrinsicElements['group']" : ''}) {
+          const { nodes, materials${
+            hasAnimations ? ', animations' : ''
+          } } = useGLTF('/assets/${folderName}/${fileName}'${
     options.draco ? `, ${JSON.stringify(options.draco)}` : ''
   })${options.types ? ' as GLTFResult' : ''}${printAnimations(animations)}
           return (
