@@ -3,16 +3,7 @@ const prettier = require('prettier')
 const parserBabel = require('prettier/parser-babel')
 const isVarName = require('./isVarName')
 
-function parse(fileName, folderName, gltf, options = {}) {
-  function snake2Pascal(str) {
-    str += ''
-    str = str.split('_')
-    for (var i = 0; i < str.length; i++) {
-      str[i] = str[i].slice(0, 1).toUpperCase() + str[i].slice(1, str[i].length)
-    }
-    return str.join('')
-  }
-
+function parse(fileName, modelName, folderName, gltf, options = {}) {
   function sanitizeName(name) {
     return isVarName(name) ? `.${name}` : `['${name}']`
   }
@@ -219,8 +210,6 @@ function parse(fileName, folderName, gltf, options = {}) {
       }
     }
   })
-
-  modelName = snake2Pascal(folderName)
 
   const animations = gltf.animations
   const hasAnimations = animations.length > 0

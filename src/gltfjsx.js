@@ -17,18 +17,13 @@ function toArrayBuffer(buf) {
 const gltfLoader = new THREE.GLTFLoader()
 gltfLoader.setDRACOLoader(new DracoLoader())
 
-module.exports = function (file, output, options) {
+module.exports = function (file, modelName, folderName, output, options) {
   function getRelativeFilePath(file) {
     const filePath = path.resolve(file)
     const rootPath = options.root ? path.resolve(options.root) : path.dirname(file)
     const relativePath = path.relative(rootPath, filePath) || ''
     if (process.platform === 'win32') return relativePath.replace(/\\/g, '/')
     return relativePath
-  }
-
-  function getFolderName(file) {
-    const rootPath = options.root ? path.resolve(options.root) : path.dirname(file)
-    return path.basename(rootPath)
   }
 
   return new Promise((resolve, reject) => {
@@ -38,14 +33,13 @@ module.exports = function (file, output, options) {
         reject(file + ' does not exist.')
       } else {
         const filePath = getRelativeFilePath(file)
-        const folderName = getFolderName(file)
         const data = fs.readFileSync(file)
         const arrayBuffer = toArrayBuffer(data)
         gltfLoader.parse(
           arrayBuffer,
           '',
           (gltf) => {
-            stream.write(parse(filePath, folderName, gltf, options))
+            stream.write(parse(filePath, modelName, folderName, gltf, options))
             stream.end()
             if (options.setLog) setTimeout(() => resolve(), (options.timeout = options.timeout + options.delay))
             else resolve()

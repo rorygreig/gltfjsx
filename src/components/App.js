@@ -3,12 +3,32 @@ const React = require('react')
 const { Text, Box } = require('ink')
 const importJsx = require('import-jsx')
 const gltfjsx = require('../gltfjsx')
+const path = require('path')
 const ErrorBoundary = importJsx('./ErrorBoundary')
+
+function getFolderName(file) {
+  return path.basename(path.dirname(file))
+}
+
+function snake2Pascal(str) {
+  str += ''
+  str = str.split('_')
+  for (var i = 0; i < str.length; i++) {
+    str[i] = str[i].slice(0, 1).toUpperCase() + str[i].slice(1, str[i].length)
+  }
+  return str.join('')
+}
 
 function Conversion({ file, ...config }) {
   let nameExt = file.match(/[-_\w]+[.][\w]+$/i)[0]
   let name = nameExt.split('.').slice(0, -1).join('.')
-  let output = name.charAt(0).toUpperCase() + name.slice(1) + (config.types ? '.tsx' : '.js')
+  let folderName = getFolderName(file)
+  let modelName = snake2Pascal(folderName)
+
+  // let modelName =
+
+  let output = modelName + (config.types ? '.tsx' : '.js')
+  // let output = name.charAt(0).toUpperCase() + name.slice(1) + (config.types ? '.tsx' : '.js')
 
   const [done, setDone] = React.useState(false)
   const [log, setLog] = React.useState([])
@@ -16,7 +36,7 @@ function Conversion({ file, ...config }) {
   React.useEffect(() => {
     async function run() {
       try {
-        await gltfjsx(file, output, { ...config, setLog, timeout: 0, delay: 5 })
+        await gltfjsx(file, modelName, folderName, output, { ...config, setLog, timeout: 0, delay: 5 })
         setDone(true)
       } catch (e) {
         setDone(() => {
