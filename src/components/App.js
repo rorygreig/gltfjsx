@@ -20,15 +20,10 @@ function snake2Pascal(str) {
 }
 
 function Conversion({ file, ...config }) {
-  let nameExt = file.match(/[-_\w]+[.][\w]+$/i)[0]
-  let name = nameExt.split('.').slice(0, -1).join('.')
   let folderName = getFolderName(file)
   let modelName = snake2Pascal(folderName)
 
-  // let modelName =
-
   let output = modelName + (config.types ? '.tsx' : '.js')
-  // let output = name.charAt(0).toUpperCase() + name.slice(1) + (config.types ? '.tsx' : '.js')
 
   const [done, setDone] = React.useState(false)
   const [log, setLog] = React.useState([])
