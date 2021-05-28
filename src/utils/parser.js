@@ -220,23 +220,22 @@ ${parseExtras(gltf.parser.json.asset && gltf.parser.json.asset.extras)}*/
         ${options.types ? `\nimport * as THREE from 'three'` : ''}
         import React, { useRef } from 'react'
         import { useGLTF, ${scene.includes('PerspectiveCamera') ? 'PerspectiveCamera,' : ''}
+        import useModel from "./modelUtils"
         ${scene.includes('OrthographicCamera') ? 'OrthographicCamera,' : ''}
         ${hasAnimations ? 'useAnimations' : ''} } from '@react-three/drei'
         ${options.types ? 'import { GLTF } from "three/examples/jsm/loaders/GLTFLoader"' : ''}
         ${options.types ? printTypes(objects, animations) : ''}
         export default function Model(props${options.types ? ": JSX.IntrinsicElements['group']" : ''}) {
-          const group = ${options.types ? 'useRef<THREE.Group>()' : 'useRef()'}
           const { nodes, materials${hasAnimations ? ', animations' : ''} } = useGLTF('/${fileName}'${
     options.draco ? `, ${JSON.stringify(options.draco)}` : ''
   })${options.types ? ' as GLTFResult' : ''}${printAnimations(animations)}
           return (
-            <group ref={group} {...props} dispose={null}>
+            <group {...useModel(props)} {...props} dispose={null}>
         ${scene}
             </group>
           )
         }
-
-useGLTF.preload('/${fileName}')`
+`
   return prettier.format(result, {
     semi: false,
     printWidth: options.printwidth || 120,
