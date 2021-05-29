@@ -230,7 +230,7 @@ ${parseExtras(gltf.parser.json.asset && gltf.parser.json.asset.extras)}*/
             hasAnimations ? ', animations' : ''
           } } = useGLTF('/assets/${folderName}/${fileName}'${
     options.draco ? `, ${JSON.stringify(options.draco)}` : ''
-  })${options.types ? ' as GLTFResult' : ''}${printAnimations(animations)}
+  })${options.types ? ' as GLTFResult' : ''}
           return (
             <group {...useModel(props)} {...props} dispose={null}>
         ${scene}
